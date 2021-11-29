@@ -18,6 +18,8 @@ struct my_arg {
 	int *found;
 };
 
+pthread_barrier_t barrier;
+
 /*
 void binary_search() {
 	while (keep_running) {
@@ -44,9 +46,58 @@ void *f(void *arg)
 	struct my_arg* data = (struct my_arg*) arg;
 
 	while (*data->keep_running) {
-		int size = *data->right - *data->left;
-
 		// TODO: implementati parallel binary search
+		int end;
+		int size = *data->right - *data->left;
+		int start = *data->left + data->id * (double)size / data->P;
+		if ((data->id + 1) * (double)size / data->P > size) {
+			end = *data->left + size;
+		} else {
+			end = *data->left + (data->id + 1) * (double)size / data->P;
+		}
+		
+		if (end < start) {
+			*data->keep_running = 0;
+			*data->found = -1;
+			pthread_barrier_wait(&barrier);
+			break;
+		}
+
+		int aux1 = *data->left, aux2 = *data->right;
+
+
+		pthread_barrier_wait(&barrier);
+		if (data->v[start] <= data->number && data->v[end - 1] >= data->number) {
+			if (data->v[start] == data->number)
+			{
+				*data->found = start;
+				*data->keep_running = 0;	
+				printf("Number found at position %d\n", data->id, start);
+			}
+			else if (data->v[end - 1] == data->number)
+			{
+				*data->found = end - 1;
+				*data->keep_running = 0;	
+				printf("Number found at position %d\n", data->id, end - 1);
+			}
+			else
+			{
+				*data->left = start;
+				*data->right = end;
+			}
+		}
+		pthread_barrier_wait(&barrier);
+		
+		if (*data->keep_running == 0)
+			break;
+
+		if (*data->left == aux1 && *data->right == aux2) {
+			*data->found = -1;
+			*data->keep_running = 0;
+			break;
+		}
+		pthread_barrier_wait(&barrier);
+
 	}
 
 	return NULL;
@@ -80,6 +131,8 @@ int main(int argc, char *argv[])
 	N = atoi(argv[1]);
 	P = atoi(argv[2]);
 	number = atoi(argv[3]);
+
+	pthread_barrier_init(&barrier, NULL, P);
 
 	keep_running = 1;
 	left = 0;
@@ -127,6 +180,8 @@ int main(int argc, char *argv[])
 	free(v);
 	free(threads);
 	free(arguments);
+
+	pthread_barrier_destroy(&barrier);
 
 	return 0;
 }

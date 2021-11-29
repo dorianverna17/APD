@@ -9,6 +9,8 @@ int *v;
 int *vQSort;
 int *vNew;
 
+pthread_barrier_t barrier;
+
 void merge(int *source, int start, int mid, int end, int *destination) {
 	int iA = start;
 	int iB = mid;
@@ -113,6 +115,35 @@ void *thread_function(void *arg)
 	int thread_id = *(int *)arg;
 
 	// implementati aici merge sort paralel
+	int start_index, end_index;
+	int start_local, end_local;
+
+	// implementati aici merge sort paralel
+	int width, *aux;
+	for (width = 1; width < N; width = 2 * width) {
+		start_index = thread_id * (double) N / P;
+		end_index = (thread_id + 1) * (double) N / P;
+		start_local = (start_index / (2 * width)) * (2 * width);
+		if (N > (end_index / (2 * width)) * (2 * width)) {
+			end_local = (end_index / (2 * width)) * (2 * width);
+		} else {
+			end_local = N;
+		}
+
+		for (int i = start_local; i < end_local; i = i + 2 * width) {
+			merge(v, i, i + width, i + 2 * width, vNew);
+		}
+
+		pthread_barrier_wait(&barrier);
+
+		if (thread_id == 0) { 
+			aux = v;
+			v = vNew;
+			vNew = aux;
+		}
+		pthread_barrier_wait(&barrier);
+	}
+
 
 	pthread_exit(NULL);
 }
@@ -130,6 +161,8 @@ int main(int argc, char *argv[])
 	for (i = 0; i < N; i++)
 		vQSort[i] = v[i];
 	qsort(vQSort, N, sizeof(int), cmp);
+
+	pthread_barrier_init(&barrier, NULL, P);
 
 	// se creeaza thread-urile
 	for (i = 0; i < P; i++) {
@@ -159,6 +192,8 @@ int main(int argc, char *argv[])
 	free(v);
 	free(vQSort);
 	free(vNew);
+
+	pthread_barrier_destroy(&barrier);
 
 	return 0;
 }
