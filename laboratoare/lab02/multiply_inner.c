@@ -8,19 +8,34 @@ int **a;
 int **b;
 int **c;
 
+// declare the mutex
+pthread_mutex_t mutex;
+
 void *thread_function(void *arg)
 {
 	int thread_id = *(int *)arg;
 
-	/*
-	for (i = 0; i < N; i++) {
-		for (j = 0; j < N; j++) {
-			for (k = 0; k < N; k++) {
-				c[i][j] += a[i][k] * b[k][j];
+	int start = thread_id * N / P;
+	int end;
+
+	if ((thread_id + 1) * N / P > N)
+		end = N;
+	else
+		end = (thread_id + 1) * N / P;
+
+	int aux;
+
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			aux = 0;
+			for (int k = start; k < end; k++) {
+				aux += a[i][k] * b[k][j];
 			}
+			pthread_mutex_lock(&mutex);
+			c[i][j] += aux;
+			pthread_mutex_unlock(&mutex);
 		}
 	}
-	*/
 
 	pthread_exit(NULL);
 }
@@ -96,6 +111,9 @@ int main(int argc, char *argv[])
 	pthread_t tid[P];
 	int thread_id[P];
 
+	// initialize the mutex
+	pthread_mutex_init(&mutex, NULL);
+
 	for (i = 0; i < P; i++) {
 		thread_id[i] = i;
 		pthread_create(&tid[i], NULL, thread_function, &thread_id[i]);
@@ -107,5 +125,6 @@ int main(int argc, char *argv[])
 
 	print(c);
 
+	pthread_mutex_destroy(&mutex);
 	return 0;
 }

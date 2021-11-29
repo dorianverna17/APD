@@ -1,6 +1,6 @@
 #!/bin/bash
 
-N=1000
+N=100
 P=2
 
 if [ ! -f "multiply_seq" ]

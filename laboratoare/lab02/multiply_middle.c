@@ -12,15 +12,21 @@ void *thread_function(void *arg)
 {
 	int thread_id = *(int *)arg;
 
-	/*
-	for (i = 0; i < N; i++) {
-		for (j = 0; j < N; j++) {
-			for (k = 0; k < N; k++) {
+	int start = thread_id * N / P;
+	int end;
+
+	if ((thread_id + 1) * N / P > N)
+		end = N;
+	else
+		end = (thread_id + 1) * N / P;
+
+	for (int i = 0; i < N; i++) {
+		for (int j = start; j < end; j++) {
+			for (int k = 0; k < N; k++) {
 				c[i][j] += a[i][k] * b[k][j];
 			}
 		}
 	}
-	*/
 
 	pthread_exit(NULL);
 }
