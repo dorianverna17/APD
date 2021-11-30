@@ -1,5 +1,7 @@
 package bug1;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Why is value set correct even though we do not use
  * locks/synchronized?
@@ -10,7 +12,8 @@ public class MyThread implements Runnable {
 
     @Override
     public void run() {
-        for (int i = 0; i < Main.N; i++)
+        for (int i = 0; i < Main.N; i++) {
             value = value + 3;
+        }
     }
 }
