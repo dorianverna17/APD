@@ -6,11 +6,22 @@ public class Barber extends Thread {
         int servedClients = 0;
 
         do {
-            // TODO
+            try {
+                Main.sem_client.acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                Main.sem_chairs.acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
             Main.chairs++;
 
-            // TODO
+            Main.sem_barber.release();
+            Main.sem_chairs.release();
 
             try {
                 Thread.sleep(100);
@@ -26,7 +37,7 @@ public class Barber extends Thread {
 
     private boolean checkIfThereAnyClients() {
         int count = 0;
-        for (var client: Main.leftClients) {
+        for (int client: Main.leftClients) {
             if (client == 0) {
                 count++;
             }

@@ -19,10 +19,23 @@ public class Reader extends Thread {
         }
 
         do {
-            // TODO
+            try {
+                Main.readers.acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
             Main.currentReaders++;
-            // TODO
+
+            if (Main.currentReaders == 1) {
+                try {
+                    Main.readWriteSem.acquire();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            };
+
+            Main.readers.release();
 
             try {
                 Thread.sleep(100);
@@ -32,10 +45,19 @@ public class Reader extends Thread {
             System.out.println("Reader " + id + " is reading");
             Main.hasRead[id] = true;
 
-            // TODO
-            Main.currentReaders--;
-            // TODO
+            try {
+                Main.readers.acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
+            Main.currentReaders--;
+
+            if (Main.currentReaders == 0) {
+                Main.readWriteSem.release();
+            };
+
+            Main.readers.release();
         } while (!Main.hasRead[id]);
     }
 }

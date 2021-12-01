@@ -14,7 +14,10 @@ public class Main {
     // used to make sure threads try to go in the same to the shared zone
     public static CyclicBarrier barrier = new CyclicBarrier(READERS + WRITERS);
 
-    // TODO: add semaphores
+    // mutex (sau semafor) folosit pentru a modifica numărul de cititori
+    static Semaphore readers = new Semaphore(1);
+    // semafor (sau mutex) folosit pentru protejarea resursei comune
+    static Semaphore readWriteSem = new Semaphore(1);
 
     public static void main(String[] args) throws InterruptedException {
         Thread[] readers = new Reader[READERS];
@@ -28,19 +31,19 @@ public class Main {
             writers[i] = new Writer(i);
         }
 
-        for (var reader: readers) {
+        for (Thread reader: readers) {
             reader.start();
         }
 
-        for (var writer: writers) {
+        for (Thread writer: writers) {
             writer.start();
         }
 
-        for (var reader: readers) {
+        for (Thread reader: readers) {
             reader.join();
         }
 
-        for (var writer: writers) {
+        for (Thread writer: writers) {
             writer.join();
         }
     }

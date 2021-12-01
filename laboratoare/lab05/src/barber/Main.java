@@ -14,6 +14,9 @@ public class Main {
     public static int[] leftClients = new int[TOTAL_CLIENTS];
 
     // TODO: add semaphores
+    static Semaphore sem_client = new Semaphore(0);
+    static Semaphore sem_barber = new Semaphore(0);
+    static Semaphore sem_chairs = new Semaphore(1);
 
     public static int clients = TOTAL_CLIENTS;
     public static int chairs = TOTAL_CHAIRS;
@@ -33,12 +36,12 @@ public class Main {
         }
 
         barberThread.join();
-        for (var thread: clientThreads) {
+        for (Thread thread: clientThreads) {
             thread.join();
         }
 
         int unservedClients = 0;
-        for (var client: leftClients) {
+        for (int client: leftClients) {
             if (client == UNSERVED_CLIENT) {
                 unservedClients++;
             }

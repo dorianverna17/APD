@@ -19,7 +19,16 @@ public class Main {
     // used to make sure threads try to go in the same to the shared zone
     public static CyclicBarrier barrier = new CyclicBarrier(READERS + WRITERS);
 
-    // TODO: add semaphores
+    // semafor folosit pentru a pune scriitori în așteptare, dacă avem un scriitor
+    // sau unul sau mai mulți cititori în zona de memorie (zona critică)
+    static Semaphore sem_writer = new Semaphore(0);
+
+    // semafor folosit pentru a pune cititori în așteptare dacă avem un scriitor care scrie în zona de memorie
+    // sau dacă avem scriitori în așteptare (deoarece ei au prioritate față de cititori)
+    static Semaphore sem_reader = new Semaphore(0);
+
+    // semafor folosit pe post de mutex pentru protejarea zonei de memorie (zona critică)
+    static Semaphore enter = new Semaphore(1);
 
     public static void main(String[] args) throws InterruptedException {
         Thread[] readers = new Reader[READERS];
@@ -33,19 +42,19 @@ public class Main {
             writers[i] = new Writer(i);
         }
 
-        for (var reader: readers) {
+        for (Thread reader: readers) {
             reader.start();
         }
 
-        for (var writer: writers) {
+        for (Thread writer: writers) {
             writer.start();
         }
 
-        for (var reader: readers) {
+        for (Thread reader: readers) {
             reader.join();
         }
 
-        for (var writer: writers) {
+        for (Thread writer: writers) {
             writer.join();
         }
     }
