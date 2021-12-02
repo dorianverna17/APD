@@ -33,6 +33,16 @@ public class VerifyTree implements Runnable {
 
 	@Override
 	public void run() {
+        try {
+            try {
+                Main.barrier.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
+        }
+
 		if (isCorrect(tree))
 			System.out.println("Correct");
 		else

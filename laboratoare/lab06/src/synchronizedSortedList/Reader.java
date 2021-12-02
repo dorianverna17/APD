@@ -26,5 +26,6 @@ public class Reader extends Thread {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        Main.sem.release();
     }
 }

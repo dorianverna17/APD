@@ -9,16 +9,19 @@ public class Main {
     private final static int N_ITERATIONS = 100;
     private final static int NUMBER_OF_THREADS = 4;
 
+    public static Semaphore sem;
+
     public static void main(String[] args) {
         Thread[] threads = new Thread[4];
         boolean sw = true;
 
         for (int i = 0; i < N_ITERATIONS; i++) {
-            List<Integer> list = new ArrayList<>();
+            List<Integer> list = Collections.synchronizedList(new ArrayList<>());
+            sem = new Semaphore(-2);
 
-            threads[0] = new Reader("elemente1.txt", list);
-            threads[1] = new Reader("elemente2.txt", list);
-            threads[2] = new Reader("elemente3.txt", list);
+            threads[0] = new Reader("D:\\Facultate\\Anul3\\APD\\repo_APD\\laboratoare\\lab06\\elemente1.txt", list);
+            threads[1] = new Reader("D:\\Facultate\\Anul3\\APD\\repo_APD\\laboratoare\\lab06\\elemente2.txt", list);
+            threads[2] = new Reader("D:\\Facultate\\Anul3\\APD\\repo_APD\\laboratoare\\lab06\\elemente3.txt", list);
             threads[3] = new Sort(list);
 
             for (int j = 0; j < NUMBER_OF_THREADS; j++) {

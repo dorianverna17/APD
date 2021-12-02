@@ -14,6 +14,11 @@ public class Sort extends Thread {
 
     @Override
     public void run() {
+        try {
+            Main.sem.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Collections.sort(list);
     }
 }

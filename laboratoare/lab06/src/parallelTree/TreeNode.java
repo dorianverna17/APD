@@ -10,12 +10,14 @@ public class TreeNode {
 	}
 
 	public void addChild(TreeNode child) {
-		if (left == null) {
-			left = child;
-			return;
-		}
-		right = child;
-	}
+	    synchronized (this) {
+            if (left == null) {
+                left = child;
+                return;
+            }
+            right = child;
+        }
+    }
 
 	public TreeNode getNode(int name) {
 		TreeNode aux = null;
