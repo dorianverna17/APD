@@ -1,5 +1,60 @@
 package task5;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveTask;
+
+class Task extends RecursiveTask<Void> {
+    private final int[] colors;
+    private final int step;
+
+    public Task(int[] colors, int step) {
+        this.colors = colors;
+        this.step = step;
+    }
+
+    @Override
+    protected Void compute() {
+        if (step == Main.N) {
+            Main.printColors(colors);
+            return null;
+        }
+
+        // for the node at position step try all possible colors
+        List<Task> tasks = new ArrayList<>();
+        for (int i = 0; i < Main.COLORS; i++) {
+            int[] newColors = colors.clone();
+            newColors[step] = i;
+            if (verifyColors(newColors, step)) {
+                Task t = new Task(newColors, step + 1);
+                tasks.add(t);
+                t.fork();
+            }
+        }
+        for (Task task : tasks) {
+            task.join();
+        }
+        return null;
+    }
+
+    private static boolean isEdge(int a, int b) {
+        for (int[] ints : Main.graph) {
+            if (ints[0] == a && ints[1] == b)
+                return true;
+        }
+        return false;
+    }
+
+    private static boolean verifyColors(int[] colors, int step) {
+        for (int i = 0; i < step; i++) {
+            if (colors[i] == colors[step] && isEdge(i, step))
+                return false;
+        }
+        return true;
+    }
+}
+
 public class Main {
     static int N = 10;
     static int COLORS = 3;
@@ -50,5 +105,11 @@ public class Main {
     public static void main(String[] args) {
         int[] colors = new int[N];
         colorGraph(colors, 0);
+
+        System.out.println();
+
+        ForkJoinPool fjp = new ForkJoinPool(4);
+        fjp.invoke(new Task(colors, 0));
+        fjp.shutdown();
     }
 }

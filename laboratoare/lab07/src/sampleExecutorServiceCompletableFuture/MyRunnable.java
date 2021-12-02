@@ -34,9 +34,9 @@ public class MyRunnable implements Runnable {
 				tpe.shutdown();
 			}
 		} else if (file.isDirectory()) {
-			var files = file.listFiles();
+			File[] files = file.listFiles();
 			if (files != null) {
-				for (var f : files) {
+				for (File f : files) {
 					counter.incrementAndGet();
 					Runnable t = new MyRunnable(tpe, f.getPath(), filename, counter, completableFuture);
 					tpe.submit(t);

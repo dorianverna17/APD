@@ -8,9 +8,9 @@ public class Main {
         if (file.isFile()) {
             System.out.println(file.getPath());
         } else if (file.isDirectory()) {
-            var files = file.listFiles();
+            File[] files = file.listFiles();
             if (files != null) {
-                for (var f : files) {
+                for (File f : files) {
                     show(f.getPath());
                 }
             }

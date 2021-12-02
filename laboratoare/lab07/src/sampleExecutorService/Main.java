@@ -11,6 +11,6 @@ public class Main {
 		ExecutorService tpe = Executors.newFixedThreadPool(4);
 
 		inQueue.incrementAndGet();
-		tpe.submit(new MyRunnable("files", tpe, inQueue));
+		tpe.submit(new MyRunnable("D:\\Facultate\\Anul3\\APD\\repo_APD\\laboratoare\\lab07\\src", tpe, inQueue));
 	}
 }

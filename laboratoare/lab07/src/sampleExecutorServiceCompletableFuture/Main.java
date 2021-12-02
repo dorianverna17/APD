@@ -13,9 +13,9 @@ public class Main {
 		CompletableFuture<String> completableFuture = new CompletableFuture<>();
 		AtomicInteger counter = new AtomicInteger(0);
 		counter.incrementAndGet();
-		tpe.submit(new MyRunnable(tpe, "files", "somefile.txt", counter, completableFuture));
+		tpe.submit(new MyRunnable(tpe, "D:\\Facultate\\Anul3\\APD\\repo_APD\\laboratoare\\lab07\\files", "somefile.txt", counter, completableFuture));
 
-		var result = completableFuture.get();
+		String result = completableFuture.get();
 		if (result != null) {
 			System.out.println("File was found at this path: " + result);
 		} else {

@@ -19,16 +19,16 @@ public class Task extends RecursiveTask<Void> {
 			System.out.println(file.getPath());
 			return null;
 		} else if (file.isDirectory()) {
-			var files = file.listFiles();
+			File[] files = file.listFiles();
 			List<Task> tasks = new ArrayList<>();
 			if (files != null) {
-				for (var f : files) {
+				for (File f : files) {
 					Task t = new Task(f.getPath());
 					tasks.add(t);
 					t.fork();
 				}
 			}
-			for (var task: tasks) {
+			for (Task task: tasks) {
 				task.join();
 			}
 		}

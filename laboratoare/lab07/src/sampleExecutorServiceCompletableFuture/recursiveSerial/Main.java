@@ -10,9 +10,9 @@ public class Main {
                 System.out.println(file.getAbsolutePath());
             }
         } else if (file.isDirectory()) {
-            var files = file.listFiles();
+            File[] files = file.listFiles();
             if (files != null) {
-                for (var f : files) {
+                for (File f : files) {
                     findFile(f.getPath(), filename);
                 }
             }
